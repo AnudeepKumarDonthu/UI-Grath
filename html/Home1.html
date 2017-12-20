@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<meta charset="ISO-8859-1">
+<title>More Log Chart</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
+<script type="text/javascript">
+	angular
+			.module("app", [ "chart.js" ])
+			.controller(
+					"BarCtrl",
+					function($scope, $http) {
+						$http
+								.get(
+										"https://kmel2422a2.execute-api.us-east-2.amazonaws.com/prod/getmorelogdata")
+								.then(
+										function(response) {
+											var dates = [];
+											var codes = [];
+											$scope.series = [ 'Success',
+													'Failure' ];
+											$scope.labels = [];
+											$scope.alllabels = [];
+											var successvalue = 0;
+											var failurevalue = 0;
+											$scope.myData = response.data;
+											$scope.actualData = [];
+											$scope.actualData[0] = [];
+											$scope.actualData[1] = [];
+											for (var i = 0; i < $scope.myData.Items.length; i++) {
+												dates[i] = (JSON
+														.stringify($scope.myData.Items[i].time
+																.substring(0,
+																		20)))
+														.substring(1, 21);
+												codes[i] = $scope.myData.Items[i].code
+											}
+											$scope.labels = [];
+											/*Find unix dates start*/
+											for (let i = 0; i < dates.length; i++) {
+												if ($scope.labels
+														.indexOf(dates[i]) == -1) {
+													$scope.labels
+															.push(dates[i])
+												}
+											}
+											/*Find unix dates Ends*/
+											for (var i = 0; i < $scope.labels.length; i++) {
+												successvalue = 0;
+												failurevalue = 0;
+												for (var j = 0; j < dates.length; j++) {
+													if ($scope.labels[i] == dates[j]) {
+														if (codes[j] == 200
+																|| codes[j] == 304) {
+															successvalue += 1;
+															$scope.actualData[0][i] = successvalue;
+														} else {
+															failurevalue += 1;
+															$scope.actualData[1][i] = failurevalue;
+														}
+														if (typeof $scope.actualData[1][i] === "undefined"
+																|| !$scope.actualData[1][i]) {
+															$scope.actualData[1][i] = 0;
+														}
+														if (typeof $scope.actualData[0][i] === "undefined"
+																|| !$scope.actualData[0][i]) {
+															$scope.actualData[0][i] = 0;
+														}
+
+													}
+												}
+											}
+											$scope.data = $scope.actualData;
+										});
+						$scope.options = {
+							legend : {
+								display : true
+							},
+							title : {
+								display : true,
+								text : "Log Data Chart",
+								fontSize : 20
+							}
+						}
+					});
+</script>
+</head>
+<body ng-controller="BarCtrl">
+	 <div
+		style="position: absolute; top: 60px; left: 10px; width: 900px; height: 500px;"> 
+		<canvas id="bar" class="chart chart-bar" chart-data="data"
+			chart-labels="labels" chart-series="series" chart-options="options">
+</canvas>
+	</div>
+</body>
+</html>

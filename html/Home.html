@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<meta charset="ISO-8859-1">
+<title>Log Chart</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
+<script type="text/javascript">
+	angular
+			.module("app", [ "chart.js" ])
+			.controller(
+					"BarCtrl",
+					function($scope, $http) {
+
+						$scope.labels = new Array();
+						$scope.series = [ 'ERROR', 'EXCEPTION' ];
+						$http
+								.get(
+										"https://kmel2422a2.execute-api.us-east-2.amazonaws.com/prod/getlogfiledata")
+								.then(
+										function(response) {
+											$scope.myData = response.data;
+											var actualData = [];
+											actualData[0] = [];
+											actualData[1] = [];
+											$scope.myData = response.data;
+											var sample = 1;
+											var type1;
+											var type2;
+											var value1;
+											var value2;
+											$scope.data = actualData;
+											for (var i = 0; i < $scope.myData.Items.length; i++) {
+												$scope.labels[i] = $scope.myData.Items[i].Date;
+												type1 = $scope.myData.Items[i].type1;
+												type2 = $scope.myData.Items[i].type2;
+												value1=$scope.myData.Items[i].values1;
+												value2=$scope.myData.Items[i].values2;
+												if (typeof type1 === "undefined"
+														|| !type1) {
+													type1 = "ERROR";
+													value1 = 0;
+												}
+												if (typeof type2 === "undefined"
+														|| !type2) {
+													type2 = "EXCEPTION";
+													value2 = 0;
+												}
+												if (type1.includes("ERROR")) {
+													actualData[0][i] = value1;
+												}
+												if (type2.includes("EXCEPTION")) {
+													actualData[1][i] = value2;
+												}
+											}
+											if (actualData
+													.includes("2017/11/10 10:30:09")) {
+												alert("I am present");
+											}
+										});
+						$scope.options = {
+							legend : {
+								display : true
+							},
+							title : {
+								display : true,
+								text : "Log Data Chart",
+								fontSize : 20
+							}
+						}
+					});
+</script>
+</head>
+<body ng-controller="BarCtrl">
+	 <div
+		style="position: absolute; top: 60px; left: 10px; width: 810px; height: 500px;"> 
+		<canvas id="bar" class="chart chart-bar" chart-data="data"
+			chart-labels="labels" chart-series="series" chart-options="options">
+</canvas>
+	</div>
+</body>
+</html>

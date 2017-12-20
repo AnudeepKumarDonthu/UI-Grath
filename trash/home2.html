@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html ng-app="MyApp">
+<head>
+<meta charset="ISO-8859-1">
+<title>Graph Page</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="../js/angular-chart.min.js"></script>
+<script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<script src="http://cdn.zingchart.com/angular/zingchart-angularjs.js"></script>
+<script type="text/javascript" src="../js/my-app.js"></script>
+</head>
+<body ng-controller="MainController">
+	<canvas id="bar" class="chart chart-bar" chart-data="data"
+		chart-labels="labels" chart-series="series"></canvas>
+</body>
+</html>
